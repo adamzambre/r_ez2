@@ -88,7 +88,8 @@ class _RegisterState extends State<Register> {
                       onPressed: () async{
                         if(_formKey.currentState!.validate()){//validate the current state of the form using 'validator' properties in the TextFormField, validate method lepas kalau smeua null je
                           dynamic result = await _auth.registerWithEmailAndPassword(email, password);
-                          if(result){//it is true
+                          error = result[1];
+                          if(result[0]){//it is true
                             Navigator.pushReplacement(
                               context, MaterialPageRoute(
                                 builder: (context) => UserDetails1()
