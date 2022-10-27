@@ -5,6 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:r_ez2/services/auth.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:r_ez2/services/shared_widgets.dart';
+import 'package:r_ez2/services/user_info.dart';
 
 class UserDetails3 extends StatefulWidget {
   const UserDetails3({Key? key}) : super(key: key);
@@ -20,58 +22,7 @@ class _UserDetails3State extends State<UserDetails3> {
 
   AuthService customAuth = new AuthService();
 
-  Future<bool> getImage() async {
-    try {
-      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
 
-      setState(() {
-        _image = File(image!.path);
-        print('Image Path $_image');
-      });
-      return true;
-    }catch(e){
-      return false;
-    }
-  }
-
-  Future<bool> pickUploadImage(BuildContext context) async {
-    try {
-      //unsupported operation cause im doing this on flutterweb not on phone bruh moment
-      //TODO download flutterimagepickerweb
-      //TODO add permission
-      /*final image = await ImagePicker().
-      pickImage(source: ImageSource.gallery,
-        maxWidth: MediaQuery
-            .of(context)
-            .size
-            .width / 5,
-        maxHeight: MediaQuery
-            .of(context)
-            .size
-            .height / 5,
-        imageQuality: 75,
-      );*/
-      String fileName = basename(_image!.path);
-      counter += 1;
-      //TODO https://www.educative.io/answers/how-to-upload-to-firebase-storage-with-flutter
-      String uid = await customAuth.getUid();
-      Reference ref = FirebaseStorage.instance.ref("locals/$uid/$fileName")
-          .child("$fileName");
-      UploadTask uploadTask = ref.putFile(File("$_image"));
-      TaskSnapshot taskSnapshot=await uploadTask.whenComplete(() {
-        setState(() {
-          print("Profile Picture $counter uploaded");
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
-        });
-      });
-      //await ref.putFile(File(image!.path)); the lines of 43 until 49
-      //ref.getDownloadURL().then((value) {
-      //  print(value);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,31 +48,14 @@ class _UserDetails3State extends State<UserDetails3> {
               padding: const EdgeInsets.all(8.0),
               child: InkWell(
                 onTap:() async{
-                  bool result = await pickUploadImage(context);
-                  if(result){
-
+                  var result = await UserInfos().getImage(_image);
+                  if(result!=null){
+                    child: PictureUploaded(image: result);
                   }else{
+                    child: PictureNotUpload();
+                  };
+                },
 
-                  }
-                  },
-                child: Container(
-                  padding: EdgeInsets.all(80),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.blueAccent),
-                    color: Colors.white,
-                  ),
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        child:Icon(
-                          Icons.add_a_photo,
-                        ),
-                      ),
-                      Container(
-                        child: Text("main photo"),
-                      ),
-                    ],
-                  ),
                 ),
               ),
             ),

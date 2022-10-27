@@ -1,7 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'auth.dart';
 
 class UserInfos {
 
@@ -41,6 +47,33 @@ class UserInfos {
     }catch(e){
       print(e.toString());
       return false;
+    }
+  }
+
+  Future getImage(File? image) async{
+    try{
+      final images = await ImagePicker().pickImage(source: ImageSource.gallery);
+        image = images as File;
+        print('Image Path $image');
+        return image;
+    }catch(e){
+      print(e.toString());
+      return null;
+    }
+  }
+
+  Future pickUploadImage(BuildContext context, File image) async{
+    try {
+      AuthService customAuth = new AuthService();
+      String uid = await customAuth.getUid();
+      String fileName = basename(image.path);
+      Reference ref = FirebaseStorage.instance.ref("locals/$uid/$fileName")
+          .child("$fileName");
+      UploadTask uploadTask = ref.putFile(File("$image"));
+      return uploadTask;
+    }catch(e){
+      print(e.toString());
+      return null;
     }
   }
 
