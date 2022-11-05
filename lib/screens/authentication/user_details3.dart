@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -5,7 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:r_ez2/services/auth.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:r_ez2/services/shared_widgets.dart';
 import 'package:r_ez2/services/user_info.dart';
 import 'package:r_ez2/screens/home/local.dart';
 
@@ -27,6 +28,7 @@ class _UserDetails3State extends State<UserDetails3> {
   File? _image;
 
   AuthService customAuth = new AuthService();
+  String uid = FirebaseAuth.instance.currentUser!.uid;
 
   void pickUploadProfilePic() async {
     final image = await ImagePicker().pickImage(
@@ -39,7 +41,7 @@ class _UserDetails3State extends State<UserDetails3> {
     String userUid = customAuth.getUid().toString();
 
     Reference ref = FirebaseStorage.instance
-        .ref("local/$userUid").child("profilepic.jpg");
+        .ref("local/$uid").child("profilepic.jpg");
 
     await ref.putFile(File(image!.path));
 
@@ -47,7 +49,17 @@ class _UserDetails3State extends State<UserDetails3> {
       setState(() {
         profilePicLink = value;
       });
+      print(value.toString());
+      DocumentReference documentReference = FirebaseFirestore.instance.collection('Users').doc(uid);
+      FirebaseFirestore.instance.runTransaction((
+          transaction) async { //run trasnactions is when u want to ubah documentSSSSS (banyak document sekali gus) so data will not be ubah by other people while requesting, gitu
+        //we read dulu the documetns from database to make sure we are working with the most uptodate data (beza dengan batched)
+        DocumentSnapshot snapshot = await transaction.get(documentReference);
+        documentReference.update({"PPUrl": value.toString()});
+      });
     });
+
+
   }
 
 

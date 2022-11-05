@@ -19,7 +19,8 @@ class Wrapper extends StatelessWidget {
     if(userInWrapper == null){//kalau bukan null then it is the user uid(tak log out lagi)
       return FirstPage();
     }else{
-      return UserDetails3();
+      return Locals();//Firebase automatically persists the user credentials locally, and tries to restore those when the app is restarted.
+                      //To sign the user out, you have to explicitly sign the user out by calling await FirebaseAuth.instance.signOut().
     };
   }
 }

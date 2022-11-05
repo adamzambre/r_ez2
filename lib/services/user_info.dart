@@ -32,7 +32,7 @@ class UserInfos {
     }
   }
 
-  Future<bool> addCountryStateCity(String Country, String State,String City) async{
+  Future<bool> addCountryStateCity(String? Country, String? State,String? City) async{
     try{
       String uid = FirebaseAuth.instance.currentUser!.uid;
       DocumentReference documentReference = FirebaseFirestore.instance
@@ -76,5 +76,7 @@ class UserInfos {
       return null;
     }
   }
+
+
 
 }

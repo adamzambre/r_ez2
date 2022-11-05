@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:r_ez2/services/auth.dart';
 import 'user_details1.dart';
+import 'dart:developer';
 
 class Register extends StatefulWidget {
   //TODO ubah error message kalau dah ada account
@@ -119,7 +120,7 @@ class _RegisterState extends State<Register> {
                     ),
                   ),
                 ],
-              )
+              ),
           ),
         )
       );
